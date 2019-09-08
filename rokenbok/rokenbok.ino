@@ -68,7 +68,9 @@ void setup()
 {
   //Used to communicate to host pc
   Serial.begin(115200);
-
+  Serial.setTimeout(1000);
+  pinMode(13, OUTPUT);
+  digitalWrite(13, LOW);
   //Initialize variables
   for (int ii = 0; ii < 8; ii++) {
     des_sel[ii] = 0xFF;
@@ -90,19 +92,21 @@ void loop()
   //Wait to receive sync bytes
   byte sync_count = 0;
   while (sync_count < 2) {
-    if (Serial.read() == sync_byte) {
-      sync_count++;
-    } else {
-      sync_count = 0;
+    if (Serial.available()) {
+      if (Serial.read() == sync_byte) {
+        sync_count++;
+      } else {
+        sync_count = 0;
+      }
     }
   }
-
+  
   //Wait until serial buffer has all of the bytes
   //we are expecting to read
   while (Serial.available() < 19) {
     //Do nothing
   }
-
+  
   //The serial buffer now has all the bytes we need to read
   des_forward = Serial.read();
   des_back = Serial.read();
@@ -116,7 +120,7 @@ void loop()
   des_sharing = Serial.read();
   des_priority = Serial.read();
   Serial.readBytes(des_sel, 8);
-
+  /*
   //Send a response
   //Send sync bytes (forward and backward most likely wont
   //be pressed at the same time
@@ -134,6 +138,10 @@ void loop()
   Serial.write(cur_slow);
   Serial.write(cur_sharing);
   Serial.write(cur_sel, 8);
+  */
+  if (Serial.available() > 1000) {
+    digitalWrite(13, HIGH);
+  }
 }
 
 byte handle_msg(byte rec_data)
