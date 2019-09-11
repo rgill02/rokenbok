@@ -17,7 +17,7 @@ des_y = 0
 des_slow = 0
 des_sharing = 0
 des_priority = 0
-des_sel = [0, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+des_sel = [2, 3, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
 sync_byte = 0b10101010
 
 cur_forward = 0
@@ -78,44 +78,59 @@ sync_state_thread = threading.Thread(target=sync_state)
 sync_state_thread.start()
 
 print("Start")
+spacebar_clicked = False
+spacebar_pressed = False
 try:
 	while True:
 		if keyboard.is_pressed('up arrow'):
-			des_forward = 1
+			des_forward = 3
 		else:
 			des_forward = 0
 		if keyboard.is_pressed('down arrow'):
-			des_back = 1
+			des_back = 3
 		else:
 			des_back = 0
 		if keyboard.is_pressed('left arrow'):
-			des_left = 1
+			des_left = 3
 		else:
 			des_left = 0
 		if keyboard.is_pressed('right arrow'):
-			des_right = 1
+			des_right = 3
 		else:
 			des_right = 0
 		if keyboard.is_pressed('w'):
-			des_b = 1
+			des_b = 3
 		else:
 			des_b = 0
 		if keyboard.is_pressed('s'):
-			des_a = 1
+			des_a = 3
 		else:
 			des_a = 0
 		if keyboard.is_pressed('a'):
-			des_x = 1
+			des_x = 3
 		else:
 			des_x = 0
 		if keyboard.is_pressed('d'):
-			des_y = 1
+			des_y = 3
 		else:
 			des_y = 0
 		if keyboard.is_pressed('q'):
-			des_slow = 1
+			des_slow = 3
 		else:
 			des_slow = 0
+		if keyboard.is_pressed('space'):
+			spacebar_pressed = True
+		else:
+			if spacebar_pressed:
+				spacebar_clicked = True
+			spacebar_pressed = False
+		if spacebar_clicked:
+			new_sel = des_sel[0] + 1
+			if new_sel > 7:
+				new_sel = 0
+			des_sel[0] = new_sel
+			spacebar_clicked = False
+
 except KeyboardInterrupt as e:
 	pass
 
