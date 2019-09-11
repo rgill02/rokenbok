@@ -166,6 +166,7 @@ class Rokenbok_Hub:
 				]
 				to_write = bytes(to_write + self.ctrl_sel)
 				self.ser.write(to_write)
+				#TODO read current selection
 				time.sleep(0.04)
 		except Exception as e:
 			print("'sync_state_arduino' encountered exception '%s': %s" % (type(e), str(e)))
@@ -183,6 +184,7 @@ class Rokenbok_Hub:
 		RETURNS: none
 		NOTES: blocks until it can open the serial port
 		"""
+		print("Restarting arduino...")
 		self.keep_going.clear()
 		if self.ser_thread:
 			self.ser_thread.join()
@@ -203,9 +205,28 @@ class Rokenbok_Hub:
 		RETURNS: none
 		NOTES:
 		"""
+		#Release all buttons
+		self.ctrl_forward = 0
+		self.ctrl_back = 0
+		self.ctrl_left = 0
+		self.ctrl_right = 0
+		self.ctrl_a = 0
+		self.ctrl_b = 0
+		self.ctrl_x = 0
+		self.ctrl_y = 0
+		self.ctrl_slow = 0
+		self.ctrl_sharing = 0
+		self.ctrl_sel = [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
+
+		#Give time for buttons to take effect
+		time.sleep(0.5)
+
+		#Stop thread
 		self.keep_going.clear()
 		if self.ser_thread:
 			self.ser_thread.join()
+
+		#Close serial connection
 		self.close_serial_con()
 
 	############################################################################
@@ -348,7 +369,13 @@ if __name__ == "__main__":
 
 	try:
 		while True:
-			time.sleep(0.5)
+			rh.change_sel(1, 3)
+			rh.cmd(Button.BACK, 1, False)
+			rh.cmd(Button.FORWARD, 1, True)
+			time.sleep(5)
+			rh.cmd(Button.FORWARD, 1, False)
+			rh.cmd(Button.BACK, 1, True)
+			time.sleep(5)
 	except KeyboardInterrupt as e:
 		pass
 
