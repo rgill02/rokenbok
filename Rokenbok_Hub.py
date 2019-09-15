@@ -78,7 +78,7 @@ class Rokenbok_Hub:
 		self.ser_port = None
 		if arduino_port is None:
 			for port in list_ports.comports():
-				if 'arduino' in port.description.lower():
+				if 'arduino' in port.description.lower() or 'arduino' in port.manufacturer.lower():
 					self.ser_port = port.device
 					break
 			if self.ser_port is None:
