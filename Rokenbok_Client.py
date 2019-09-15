@@ -116,7 +116,6 @@ class Rokenbok_Client:
 				while self.key_q.qsize():
 					k = self.key_q.get()
 					self.sock.send(bytes([Message_Type.KEY_PRESS.value, k[0], k[1]]))
-				time.sleep(0.1)
 		except Exception as e:
 			print("DEBUG: exception '%s' in transmit thread!" % type(e))
 			print(e)

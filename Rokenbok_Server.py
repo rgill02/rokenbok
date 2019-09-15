@@ -128,7 +128,6 @@ class Rokenbok_Server:
 				msg = self.sock_recv(conn)
 				if msg[0] == Message_Type.KEY_PRESS.value:
 					#Handle key press
-					print(msg[1])
 					if msg[2]:
 						rc.press_key(msg[1])
 					else:
