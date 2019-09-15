@@ -70,6 +70,9 @@ class Rokenbok_Controller:
 		elif ascii_code == 114:
 			#r
 			self.hub.restart_arduino()
+		elif ascii_code == 48:
+			#0
+			self.deselect()
 
 	############################################################################
 	def release_key(self, ascii_code):
@@ -82,6 +85,38 @@ class Rokenbok_Controller:
 		"""
 		if ascii_code in self.key_map:
 			self.hub.cmd(self.key_map[ascii_code], self.player, False)
+
+	############################################################################
+	def release_all(self):
+		"""
+		PURPOSE: releases all the buttons
+		ARGS: none
+		RETURNS: none
+		NOTES:
+		"""
+		for key, button in self.key_map.items():
+			self.hub.cmd(button, self.player, False)
+
+	############################################################################
+	def deselect(self):
+		"""
+		PURPOSE: deselects from a car
+		ARGS: none
+		RETURNS: none
+		NOTES:
+		"""
+		self.hub.change_sel(self.player, 0)
+
+	############################################################################
+	def release_all_and_deselect(self):
+		"""
+		PURPOSE: releases all the buttons and deselects from a car
+		ARGS: none
+		RETURNS: none
+		NOTES:
+		"""
+		self.release_all()
+		self.deselect()
 
 	############################################################################
 

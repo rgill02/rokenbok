@@ -74,18 +74,6 @@ class Rokenbok_Hub:
 		#Save baudrate
 		self.baudrate = int(baudrate)
 
-		#Find serial port if needed
-		self.ser_port = None
-		if arduino_port is None:
-			for port in list_ports.comports():
-				if 'arduino' in port.description.lower():
-					self.ser_port = port.device
-					break
-			if self.ser_port is None:
-				raise ValueError("Can't find serial port for arduino!")
-		else:
-			self.ser_port = str(arduino_port)
-
 		#Start the serial connection
 		self.ser = None
 		self.ser_open_time = None
@@ -116,21 +104,7 @@ class Rokenbok_Hub:
 			   will restart the arduino), blocks until it can open the serial 
 			   port
 		"""
-		#Close port if already opened
-		if self.ser and self.ser.isOpen():
-			self.ser.close()
-		#Open serial port
-		is_open = False
-		ser_delay = 2
-		while not is_open:
-			try:
-				self.ser = serial.Serial(port=self.ser_port, baudrate=self.baudrate)
-			except serial.serialutil.SerialException as e:
-				print("Unable to open serial port '%s'! Trying again in %d second(s)..." % (self.ser_port, ser_delay))
-				time.sleep(ser_delay)
-			else:
-				is_open = self.ser.isOpen()
-				self.ser_open_time = time.time()
+		pass
 
 	############################################################################
 	def close_serial_con(self):
@@ -153,40 +127,7 @@ class Rokenbok_Hub:
 		RETURNS: none
 		NOTES: should be run in a seperate thread
 		"""
-		#Wait at least 5 seconds for arduino to reboot after opening the serial
-		#port
-		while self.keep_going.is_set() and (time.time() - self.ser_open_time) < 5:
-			time.sleep(0.2)
-
-		#Have waited for arduino to reboot so we can start sending it our state
-		try:
-			self.ser.flush()
-			while self.keep_going.is_set():
-				to_write = [
-					self.sync_byte,
-					self.sync_byte,
-					self.ctrl_forward,
-					self.ctrl_back,
-					self.ctrl_left,
-					self.ctrl_right,
-					self.ctrl_a,
-					self.ctrl_b,
-					self.ctrl_x,
-					self.ctrl_y,
-					self.ctrl_slow,
-					self.ctrl_sharing,
-					self.priority
-				]
-				to_write = bytes(to_write + self.ctrl_sel)
-				self.ser.write(to_write)
-				#TODO read current selection
-				time.sleep(0.04)
-		except Exception as e:
-			print("'sync_state_arduino' encountered exception '%s': %s" % (type(e), str(e)))
-
-		#We have either finished gracefully or have exited on an exception, in 
-		#case of exception exit, make sure keep_going flag is cleared
-		self.keep_going.clear()
+		pass
 
 	############################################################################
 	def restart_arduino(self):
@@ -199,15 +140,10 @@ class Rokenbok_Hub:
 		"""
 		print("Restarting arduino...")
 		self.keep_going.clear()
-		if self.ser_thread:
-			self.ser_thread.join()
-		self.ser_thread = threading.Thread(target=self.sync_state_arduino)
 		self.keep_going.set()
 
 		self.close_serial_con()
 		self.open_serial_con()
-
-		self.ser_thread.start()
 
 	############################################################################
 	def stop(self):
@@ -236,8 +172,6 @@ class Rokenbok_Hub:
 
 		#Stop thread
 		self.keep_going.clear()
-		if self.ser_thread:
-			self.ser_thread.join()
 
 		#Close serial connection
 		self.close_serial_con()
