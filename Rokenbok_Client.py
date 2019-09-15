@@ -172,7 +172,7 @@ class Rokenbok_Client:
 
 ################################################################################
 if __name__ == "__main__":
-	client = Rokenbok_Client()
+	client = Rokenbok_Client("192.168.1.164")
 	print("Connected to client")
 
 	try:

@@ -58,6 +58,8 @@ class Rokenbok_Server:
 		self.listen_thread = threading.Thread(target=self.accept_connections)
 		self.listen_thread.start()
 
+		print("Starting server at ip %s on port %d..." % (self.ip, self.port))
+
 	############################################################################
 	def __del__(self):
 		"""
@@ -213,7 +215,7 @@ class Rokenbok_Server:
 
 ################################################################################
 if __name__ == "__main__":
-	server = Rokenbok_Server()
+	server = Rokenbok_Server("192.168.1.164")
 
 	try:
 		while True:
