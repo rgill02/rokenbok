@@ -214,7 +214,7 @@ class Rokenbok_Server:
 
 ################################################################################
 if __name__ == "__main__":
-	server = Rokenbok_Server("192.168.1.164")
+	server = Rokenbok_Server("192.168.1.198")
 
 	try:
 		while True:
